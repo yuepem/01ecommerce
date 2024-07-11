@@ -2,6 +2,8 @@ import { db } from '@/server/index';
 import { users } from '@/server/schema';
 import { eq } from 'drizzle-orm';
 
+import { handleError, methodNotAllowed, sendResponse } from '@/api/utils/apiHelpers';
+
 
 // GET /api/users/[id] : Retrieve a specific user by ID.
 
@@ -19,7 +21,6 @@ export async function getUserById(req, res) {
     return handleError(res, 500, 'Failed to retrieve user')
   }
 }
-
 
 // PUT /api/users/[id] : Update a specific user by ID.
 
@@ -64,19 +65,4 @@ export async function deleteUserById(req, res) {
   } catch (error) {
     return handleError(res, 500, 'Failed to delete user');
   }
-}
-
-// helper functions
-
-const methodNotAllowed = (res, method, allowedMethod) => {
-  res.setHeader('Allow', [allowedMethod]);
-  res.status(405).end(`Method ${method} Not Allowed`);
-}
-
-const handleError = (res, status, message) => {
-  res.status(status).json({ error: message })
-}
-
-const sendResponse = (res, status, data) => {
-  res.status(status).json(data)
 }
