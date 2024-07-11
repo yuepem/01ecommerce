@@ -15,9 +15,8 @@ import { relations } from "drizzle-orm";
 // Enums
 export const orderStatusEnum = pgEnum("order_status", [
   "pending",
-  "processing",
-  "shipped",
-  "delivered",
+  "paid",
+  "done",
   "cancelled",
 ]);
 export const accountTypeEnum = pgEnum("account_type", ["user", "admin"]);
@@ -74,7 +73,7 @@ export const categories = pgTable("categories", {
 
 // Orders table
 export const orders = pgTable("orders", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   userId: integer("user_id")
     .notNull()
     .references(() => users.id),

@@ -22,6 +22,20 @@
       "when": 1720619095361,
       "tag": "0002_lumpy_hitman",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1720706558670,
+      "tag": "0003_fixed_silk_fever",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1720715027571,
+      "tag": "0004_neat_joystick",
+      "breakpoints": true
     }
   ]
 }

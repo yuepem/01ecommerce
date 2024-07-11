@@ -4,7 +4,7 @@ import { handleError, methodNotAllowed, sendResponse } from '@/api/utils/apiHelp
 
 // GET /api/products : Retrieve all products.
 export default async function getAllProducts(req, res) {
-    if (req.method !== 'GET') return methodNotAllowed(res, method, 'GET')
+    if (req.method !== 'GET') return methodNotAllowed(res, req.method, 'GET')
 
     try {
         const allProducts = await db.select().from(products);
