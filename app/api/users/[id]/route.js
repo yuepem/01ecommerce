@@ -1,79 +1,82 @@
 import { db } from '@/server/index';
 import { users } from '@/server/schema';
+import { eq } from 'drizzle-orm';
+
 
 // GET /api/users/[id] : Retrieve a specific user by ID.
 
-export default async function getUserById(req, res) {
-  if (req.method !== 'GET') {
-    res.setHeader('Allow', ['GET']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
-  } else {
-    try {
-      const { id } = req.params;
-      const user = await db.select().from('users').where(eq(users.id, id));
-      if (user) {
-        res.status(200).json(user);
-      }
+export async function getUserById(req, res) {
+  if (req.method !== 'GET') return methodNotAllowed(res, req.method, 'GET')
 
-      res.status(404).json({ error: 'User not found' });
+  try {
+    const { id } = req.params;
+    const user = await db.select().from('users').where(eq(users.id, id));
+    return user.length > 0
+      ? sendResponse(res, 200, user)
+      : handleError(res, 404, 'User not found')
 
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch user' });
-    }
+  } catch (error) {
+    return handleError(res, 500, 'Failed to retrieve user')
   }
 }
-
 
 
 // PUT /api/users/[id] : Update a specific user by ID.
 
-export default async function updateUserById(req, res) {
-  if (req.method !== 'PUT') {
-    res.setHeader('Allow', ['PUT']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
-  } else {
-    try {
-      const { id } = req.params;
-      const updateInfo = req.body
-      if (Object.keys(updateInfo).length === 0) {
-        res.status(400).json({ error: 'No data provided' });
-      }
+export async function updateUserById(req, res) {
+  if (req.method !== 'PUT') return methodNotAllowed(res, req.method, 'PUT');
 
-      const updateUser = await db.update(users)
-        .set(updateInfo)
-        .where(eq(users.id, id))
-        .returning('*')
+  try {
+    const { id } = req.params;
+    const updateInfo = req.body;
 
-      if (updateUser.length > 0) {
-        res.status(200).json(updateUser);
-      } else {
-        res.status(404).json({ error: 'User not found' });
-      }
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to update user' });
+    if (Object.keys(updateInfo).length === 0) {
+      return handleError(res, 400, 'No data provided');
     }
+
+    const updateUser = await db.update(users)
+      .set(updateInfo)
+      .where(eq(users.id, id))
+      .returning('*');
+
+    return updateUser.length > 0
+      ? sendResponse(res, 200, updateUser[0])
+      : handleError(res, 404, 'User not found');
+  } catch (error) {
+    return handleError(res, 500, 'Failed to update user');
   }
 }
 
-
-
 // DELETE /api/users/[id] : Delete a specific user by ID.
 
-export default async function deleteUserById(req, res) {
-  if (req.method !== 'DELETE') {
-    res.setHeader('Allow', ['DELETE']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
-  } else {
-    try {
-      const { id } = req.params;
-      const deleteUser = await db.delete(users).where(eq(users.id, id)).returning({ name: users.name })
-      if (deleteUser.length > 0) {
-        res.status(204).json("User deleted");
-      } else {
-        res.status(404).json({ error: 'User not found' });
-      }
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to delete user' });
-    }
+export async function deleteUserById(req, res) {
+  if (req.method !== 'DELETE') return methodNotAllowed(res, req.method, 'DELETE');
+
+  try {
+    const { id } = req.params;
+    const deleteUser = await db.delete(users)
+      .where(eq(users.id, id))
+      .returning({ name: users.name });
+
+    return deleteUser.length > 0
+      ? sendResponse(res, 204, 'User deleted')
+      : handleError(res, 404, 'User not found');
+  } catch (error) {
+    return handleError(res, 500, 'Failed to delete user');
   }
+}
+
+// helper functions
+
+const methodNotAllowed = (res, method, allowedMethod) => {
+  res.setHeader('Allow', [allowedMethod]);
+  res.status(405).end(`Method ${method} Not Allowed`);
+}
+
+const handleError = (res, status, message) => {
+  res.status(status).json({ error: message })
+}
+
+const sendResponse = (res, status, data) => {
+  res.status(status).json(data)
 }
