@@ -10,10 +10,10 @@ export async function getOrderById(req, res) {
 
     try {
         const { id } = req.params;
-        const order = await db.select().from(orders).where(eq(orders.id, id));
+        const results = await db.select().from(orders).where(eq(orders.id, id));
 
-        return order.length > 0
-            ? sendResponse(res, 200, order)
+        return results.length > 0
+            ? sendResponse(res, 200, results)
             : handleError(res, 404, 'Order not found')
     } catch (error) {
         return handleError(res, 500, 'Failed to retrieve order')

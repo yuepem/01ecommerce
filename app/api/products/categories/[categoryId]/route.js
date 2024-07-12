@@ -1,6 +1,6 @@
 import { db } from '@/server/index';
 import { products } from '@/server/schema';
-import { handleError, methodNotAllowed, sendResponse } from '@/api/utils/apiHelpers';
+import { handleError, methodNotAllowed, sendResponse } from '@/app/api/utils/apiHelpers';
 import { eq } from 'drizzle-orm';
 
 // GET all products by categoryId

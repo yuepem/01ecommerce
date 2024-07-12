@@ -20,3 +20,5 @@ export default async function getProductById(req, res) {
         return handleError(res, 500, 'Failed to retrieve products')
     }
 }
+
+
