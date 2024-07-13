@@ -9,6 +9,7 @@ import {
   pgEnum,
   uuid,
   json,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -17,7 +18,7 @@ export const orderStatusEnum = pgEnum("order_status", [
   "pending",
   "paid",
   "done",
-  "cancelled",
+  "customer_canceled", 
 ]);
 export const accountTypeEnum = pgEnum("account_type", ["user", "admin"]);
 
@@ -25,9 +26,21 @@ export const accountTypeEnum = pgEnum("account_type", ["user", "admin"]);
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   phoneNumber: text("phone_number").notNull(),
-  email: text("email").unique(),
+  email: text("email").unique(),  // email could be null
   passwordHash: text("password_hash").notNull(),
   name: text("name"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Address table
+export const addresses = pgTable("addresses", {
+  id: serial("id").primaryKey(),
+  street: text("street").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  zipCode: text("zip_code").notNull(),
+  userId: integer("user_id").notNull().references(() => users.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -73,7 +86,7 @@ export const categories = pgTable("categories", {
 
 // Orders table
 export const orders = pgTable("orders", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: serial("id").primaryKey(),  // Replaced `defaultRandom()`
   userId: integer("user_id")
     .notNull()
     .references(() => users.id),
@@ -124,6 +137,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   orders: many(orders),
   accounts: one(accounts, { fields: [users.id], references: [accounts.userId] }),
   carts: one(carts, { fields: [users.id], references: [carts.userId] }),
+  addresses: many(addresses),
 }));
 
 export const productsRelations = relations(products, ({ one, many }) => ({
@@ -176,6 +190,13 @@ export const cartItemsRelations = relations(cartItems, ({ one }) => ({
 export const accountsRelations = relations(accounts, ({ one }) => ({
   user: one(users, {
     fields: [accounts.userId],
+    references: [users.id],
+  }),
+}));
+
+export const addressesRelations = relations(addresses, ({ one }) => ({
+  user: one(users, {
+    fields: [addresses.userId],
     references: [users.id],
   }),
 }));
