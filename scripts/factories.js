@@ -1,132 +1,94 @@
 import { faker } from '@faker-js/faker';
 
+// Initialize counters for serial IDs
+let addressIdCounter = 1;
+let categoryIdCounter = 1;
+let productIdCounter = 1;
+let orderItemIdCounter = 1;
+let cartItemIdCounter = 1;
 
-const users = createFakeUser();
-// const addresses = createFakeAddress();
-const orders = createFakeOrders();
-// const orderItems = createFakeOrderItems();
-const carts = createFakeCarts();
-//const cartItems = createFakeCartItems();
-const products = createFakeProducts();
-const categories = createFakeCategories();
-// const accounts = createAccounts();
+// Helper function to generate UUIDs
+const generateUUID = () => faker.string.uuid();
 
-// Create a fake User info
-export function createFakeUser() {
+// create fake data for Users
+export const createFakeUser = () => {
+  const userId = generateUUID();
   return {
-    id: faker.string.uuid(),
+    id: userId,
     name: faker.person.firstName(),
-    phoneNumber: faker.phone.phoneNumber(),
-    email: faker.internet.email({name: faker.person.firstName()}),
+    phoneNumber: faker.phone.number(),
+    email: faker.internet.email(),
     passwordHash: faker.internet.password(),
-    createAt: faker.date.recent(), 
-    updateAt: faker.date.recent(),
+    createdAt: faker.date.past(),
+    updatedAt: faker.date.recent(),
   };
 }
 
-// create fake address
-export function createFakeAddress() {
+// create fake data for Addresses
+export const createFakeAddress = (userId) => {
   return {
-    id : faker.string.uuid(),
+    id: addressIdCounter++,
     street: faker.location.streetAddress(),
     city: faker.location.city(),
     state: faker.location.state(),
     zipCode: faker.location.zipCode(),
-    userId: users.id, // ! reference to user id
-    createAt: faker.date.recent(),
-    updateAt: faker.date.recent(),
+    userId: userId,
+    createdAt: faker.date.past(),
+    updatedAt: faker.date.recent(),
   };
 }
 
-// create fake Accounts
 
-export function createAccounts() {
-  return {
-    id: faker.string.uuid(),
-    userId: users.id,
-    type: faker.helpers.arrayElement(['user', 'admin']),
-    provider: faker.internet.domainName(),
-    providerAccountId: faker.internet.domainName(),
-    refreshToken: faker.internet.password(),
-    accessToken: faker.internet.password(),
-    expiresAt: faker.date.recent(),
-    tokenType: faker.helpers.arrayElement(['Bearer', 'JWT']),
-    scope: faker.helpers.arrayElement(['read', 'write']),
-    idToken: faker.internet.password(),
-    sessionState: faker.internet.password(),
-  };
-helpers
-}
-// create fake categories
+// create fake data for Categories 
 
-export function createFakeCategories() {
+export const createFakeCategory = () => {
+  const categoryId = categoryIdCounter++;
   return {
-    id: faker.string.uuid(),
+    id: categoryId,
     name: faker.commerce.department(),
-    description: faker.lorem.sentence(),
+    description: faker.commerce.productDescription(),
   };
-
 }
 
-// create fake products
+// create fake data for Products
 
-export function createFakeProducts() {
+export const createFakeProduct = (categoryId) => {
   return {
-    id: faker.string.uuid(),
+    id: productIdCounter++,
     name: faker.commerce.productName(),
     description: faker.commerce.productDescription(),
     price: faker.commerce.price(),
-    stock: faker.number(),
-    categoryId: categories.id, // ! reference to category id
-  }
-}
-
-// create fake orders
-
-export function createFakeOrders() {
-  return {
-    id: faker.string.uuid(),
-    userId: users.id,
-    status: faker.helpers.arrayElement(['pending', 'completed', 'cancelled']),
-    total: faker.commerce.price(), // ! how to calculate total price of the order
-    createAt: faker.date.recent(),
-    updateAt: faker.date.recent(),
-  };
-}
-
-// create fake order items
-export function createFakeOrderItems() {
-  return {
-    id: faker.string.uuid(),
-    orderId: orders.id, // ! reference to order id
-    productId: products.id, // ! reference to product id
-    quantity: faker.number({min: 1, max: 10}),
-    price: products.price, // ! reference to product price
+    stock: faker.random.number(),
+    categoryId: categoryId,
+    createdAt: faker.date.past(),
+    updatedAt: faker.date.recent(),
   };
 }
 
 
-// create fake carts
-export function createFakeCarts() {
+// create fake data for Orders
+
+export const createFakeOrder = (userId) => {
   return {
-    id: faker.string.uuid(),
-    userId: users.id, // ! reference to user id
-    createAt: faker.date.recent(),
-    updateAt: faker.date.recent(),
+    id: generateUUID(),
+    userId: userId,
+    status: faker.random.arrayElement(['pending', 'shipped', 'delivered']),
+    createdAt: faker.date.past(),
+    updatedAt: faker.date.recent(),
   };
 }
 
+// create fake data for OrderItems
 
-// create fake cart items
-
-export function createFakeCartItems() {
+export const createFakeOrderItem = (orderId, productId) => {
+  const product = faker.helpers.arrayElement(products);
+  const quantity = faker.number.int({ min: 1, max: 10 });
+  const price = product.price * quantity;
   return {
-    id: faker.string.uuid(),
-    cartId: carts.id, // ! reference to cart id
-    productId: products.id, // ! reference to product id
-    quantity: faker.number(),
-  }
+    id: orderItemIdCounter++,
+    orderId: orderId,
+    productId: productId,
+    quantity: quantity,
+    price: price,
+  };
 }
-
-
-
