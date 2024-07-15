@@ -13,6 +13,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
+
 // Enums
 export const orderStatusEnum = pgEnum("order_status", [
   "pending",
@@ -24,11 +25,11 @@ export const accountTypeEnum = pgEnum("account_type", ["user", "admin"]);
 
 // Users table
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name"),
   phoneNumber: text("phone_number").notNull(),
   email: text("email").unique(),  // email could be null
   passwordHash: text("password_hash").notNull(),
-  name: text("name"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -40,15 +41,15 @@ export const addresses = pgTable("addresses", {
   city: text("city").notNull(),
   state: text("state").notNull(),
   zipCode: text("zip_code").notNull(),
-  userId: integer("user_id").notNull().references(() => users.id),
+  userId: uuid("user_id").notNull().references(() => users.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // Accounts table (for additional user info and authentication)
 export const accounts = pgTable("accounts", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id")
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
     .notNull()
     .references(() => users.id),
   type: accountTypeEnum("type").notNull().default("user"),
@@ -86,8 +87,8 @@ export const categories = pgTable("categories", {
 
 // Orders table
 export const orders = pgTable("orders", {
-  id: serial("id").primaryKey(),  // Replaced `defaultRandom()`
-  userId: integer("user_id")
+  id: uuid("id").defaultRandom().primaryKey(),  
+  userId: uuid("user_id")
     .notNull()
     .references(() => users.id),
   status: orderStatusEnum("status").notNull().default("pending"),
@@ -99,7 +100,7 @@ export const orders = pgTable("orders", {
 // Order Items table
 export const orderItems = pgTable("order_items", {
   id: serial("id").primaryKey(),
-  orderId: integer("order_id")
+  orderId: uuid("order_id")
     .notNull()
     .references(() => orders.id),
   productId: integer("product_id")
@@ -112,7 +113,7 @@ export const orderItems = pgTable("order_items", {
 // Cart table
 export const carts = pgTable("carts", {
   id: uuid("id").defaultRandom().primaryKey(),
-  userId: integer("user_id").references(() => users.id),
+  userId: uuid("user_id").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
