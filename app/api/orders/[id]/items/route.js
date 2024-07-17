@@ -1,18 +1,18 @@
 
-import { db }  from '@/server/index';
+import { db } from '@/server/index';
 import { orderItems } from '@/server/schema';
-import { handleError, methodNotAllowed, sendResponse } from '@/app/api/utils/apiHelpers';
+import { handleError, methodNotAllowed, sendResponse } from '@/utils/apiHelpers';
 import { eq } from 'drizzle-orm';
 
 
 // # [A/U] GET /api/orderItems/[orderId] : Retrieve order items from [orderItems] by order id
 
-export default async function getOrderItemsByOrderId(req,res) {
+export default async function getOrderItemsByOrderId(req, res) {
     if (req.method !== 'GET') return methodNotAllowed(res, req.method, 'GET')
 
     try {
         const { orderId } = req.params;
-        
+
         const results = await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
 
         return results.length > 0
