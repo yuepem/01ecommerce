@@ -1,21 +1,20 @@
 import { db } from '@/server/index';
 import { carts } from '@/server/schema';
-import { methodNotAllowed, sendResponse, handleError } from '@/api/utils/apiHelpers';
+import { handleError, sendResponse } from '@/utils/apiHelpers';
 
 
 // # [A] GET: Retrieve all carts,[U] POST: Create a new cart
 
-export async function getAllCarts(req, res) {
-    if (req.method !== 'GET') return methodNotAllowed(res, req.method, 'GET')
-
+export const GET = async (request) =>  {
     try {
         const results = await db.select().from(carts);
+        console.log('results:', "route: GET /api/carts");
 
         return results.length > 0
-            ? sendResponse(res, 200, results)
-            : handleError(res, 404, 'Carts not found');
+            ? sendResponse(200, results)
+            : handleError( 404, 'Carts not found');
     } catch (error) {
-        return handleError(res, 500, 'Failed to retrieve carts')
+        return handleError(500, 'Failed to retrieve carts')
     }
 }
 
@@ -24,12 +23,12 @@ export async function getAllCarts(req, res) {
 // import { getCartByUserId, getCartItems } from '@/server/db/carts';
 
 
-export async function getAllUsersCarts(req, res) {
-    /* const userId = req.session.userId;
+/* export async function getAllUsersCarts(req, res) {
+    const userId = req.session.userId;
 
     if (!userId) {
         return res.status(401).send('User not authenticated');
-    } */
+    }
 
     try {
         const cart = await getCartByUserId(userId);
@@ -49,4 +48,4 @@ export async function getAllUsersCarts(req, res) {
         console.error('Error fetching cart:', error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
-}
+} */

@@ -1,6 +1,6 @@
 import { db } from '@/server/index';
 import { categories } from '@/server/schema';
-import { handleError, methodNotAllowed, sendResponse } from '@/utils/apiHelpers';
+import { handleError, sendResponse } from '@/utils/apiHelpers';
 
 // GET /api/categories : Retrieve all categories.
 
