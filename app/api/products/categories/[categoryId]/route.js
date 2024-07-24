@@ -1,21 +1,21 @@
 import { db } from '@/server/index';
 import { products } from '@/server/schema';
-import { handleError, methodNotAllowed, sendResponse } from '@/utils/apiHelpers';
+import { handleError, sendResponse } from '@/utils/apiHelpers';
 import { eq } from 'drizzle-orm';
 
-// GET all products by categoryId
+// GET all products by categoryId: './api/products/categories/:categoryId'
 
-export default async function getProductsByCategoryId(req, res) {
-    const { categoryId } = req.query;
+export const GET = async (req, {params}) => {
+    const { categoryId } = params;
 
-    if (req.method !== 'GET') return methodNotAllowed(res, req.method, 'GET')
+    if (!categoryId) return handleError(400, 'Invalid categoryId');
 
     try {
         const results = await db.select().from(products).where(eq(products.categoryId, categoryId));
         return results.length > 0
-            ? sendResponse(res, 200, results)
-            : handleError(res, 404, 'No products found');
+            ? sendResponse(200, results)
+            : handleError(404, 'No products found');
     } catch (error) {
-        return handleError(res, 500, 'Failed to retrieve products')
+        return handleError(500, 'Failed to retrieve products')
     }
 }

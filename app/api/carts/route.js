@@ -8,7 +8,7 @@ import { handleError, sendResponse } from '@/utils/apiHelpers';
 export const GET = async (request) =>  {
     try {
         const results = await db.select().from(carts);
-        console.log('results:', "route: GET /api/carts");
+        // console.log('results:', "route: GET /api/carts");
 
         return results.length > 0
             ? sendResponse(200, results)
@@ -21,7 +21,6 @@ export const GET = async (request) =>  {
 // [A] testing : GET all users' carts
 
 // import { getCartByUserId, getCartItems } from '@/server/db/carts';
-
 
 /* export async function getAllUsersCarts(req, res) {
     const userId = req.session.userId;
