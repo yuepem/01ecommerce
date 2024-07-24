@@ -12,9 +12,6 @@ const createOrderSchema = z.object({
 });
 
 export async function createOrder(req, res) {
-  if (req.method !== 'POST') {
-    return methodNotAllowed(res, req.method, 'POST');
-  }
 
   try {
     const session = await getServerSession(req, res, authOptions);

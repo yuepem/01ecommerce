@@ -1,24 +1,24 @@
 import { db } from '@/server/index';
 import { users } from '@/server/schema';
 import { eq } from 'drizzle-orm';
-
-import { handleError, methodNotAllowed, sendResponse } from '@/api/utils/apiHelpers';
+import { handleError, sendResponse } from '@/utils/apiHelpers';
 
 
 // GET /api/users/[id] : Retrieve a specific user by ID.
 
-export async function getUserById(req, res) {
-  if (req.method !== 'GET') return methodNotAllowed(res, req.method, 'GET')
-
+export const GET = async(req, {params})=> {
   try {
-    const { id } = req.params;
-    const user = await db.select().from('users').where(eq(users.id, id));
+    const { id } = params;
+
+    const user = await db.select().from(users).where(eq(users.id, id));
+
     return user.length > 0
-      ? sendResponse(res, 200, user)
-      : handleError(res, 404, 'User not found')
+      ? sendResponse( 200, user)
+      : handleError( 404, 'User not found')
 
   } catch (error) {
-    return handleError(res, 500, 'Failed to retrieve user')
+    console.log('Error :', error);
+    return handleError( 500, 'Failed to retrieve user')
   }
 }
 

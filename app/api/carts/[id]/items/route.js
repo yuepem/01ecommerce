@@ -16,6 +16,7 @@ export const GET = async (req, { params }) => {
             ? sendResponse(200, { 'Retrieved successfully': results },)
             : handleError(404, 'Not found')
     } catch (error) {
+        console.log('Error :', error);
         return handleError(500, 'server error')
     }
 }

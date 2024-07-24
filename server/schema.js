@@ -41,7 +41,7 @@ export const addresses = pgTable("addresses", {
   city: text("city").notNull(),
   state: text("state").notNull(),
   zipCode: text("zip_code").notNull(),
-  userId: uuid("user_id").notNull().references(() => users.id).$default(sql`uuid_generate_v4()`),
+  userId: uuid("user_id").notNull().references(() => users.id, {onDelete: 'cascade'}).$default(sql`uuid_generate_v4()`),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -51,7 +51,7 @@ export const accounts = pgTable("accounts", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id")
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, {onDelete: 'cascade'}),
   type: accountTypeEnum("type").notNull().default("user"),
   provider: text("provider"),
   providerAccountId: text("provider_account_id"),
@@ -90,7 +90,7 @@ export const orders = pgTable("orders", {
   id: uuid("id").defaultRandom().primaryKey(),  
   userId: uuid("user_id")
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, {onDelete: 'cascade'}),
   status: orderStatusEnum("status").notNull().default("pending"),
   total: doublePrecision("total").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -102,10 +102,10 @@ export const orderItems = pgTable("order_items", {
   id: serial("id").primaryKey(),
   orderId: uuid("order_id")
     .notNull()
-    .references(() => orders.id),
+    .references(() => orders.id, {onDelete: 'cascade'}),
   productId: integer("product_id")
     .notNull()
-    .references(() => products.id),
+    .references(() => products.id, {onDelete: 'cascade'}),
   quantity: integer("quantity").notNull(),
   price: doublePrecision("price").notNull(),
 });
@@ -113,7 +113,7 @@ export const orderItems = pgTable("order_items", {
 // Cart table
 export const carts = pgTable("carts", {
   id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id").references(() => users.id),
+  userId: uuid("user_id").references(() => users.id, {onDelete: 'cascade'}),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -123,10 +123,10 @@ export const cartItems = pgTable("cart_items", {
   id: serial("id").primaryKey(),
   cartId: uuid("cart_id")
     .notNull()
-    .references(() => carts.id),
+    .references(() => carts.id, {onDelete: 'cascade'}),
   productId: integer("product_id")
     .notNull()
-    .references(() => products.id),
+    .references(() => products.id, {onDelete: 'cascade'}),
   quantity: integer("quantity").notNull(),
   addedAt: timestamp("added_at").defaultNow().notNull(),
 });
