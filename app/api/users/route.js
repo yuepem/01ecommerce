@@ -4,7 +4,7 @@ import { handleError, sendResponse } from "@/utils/apiHelpers";
 
 // GET all users: ./api/users
 
-export const GET = async(request) => {
+export const GET = async (request) => {
   try {
     const allUsers = await db.select().from(users);
 

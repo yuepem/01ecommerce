@@ -1,68 +1,66 @@
-import { db } from '@/server/index';
-import { users } from '@/server/schema';
-import { eq } from 'drizzle-orm';
-import { handleError, sendResponse } from '@/utils/apiHelpers';
+import { db } from "@/server/index";
+import { users } from "@/server/schema";
+import { eq } from "drizzle-orm";
+import { handleError, sendResponse } from "@/utils/apiHelpers";
 
+// GET '/api/users/[id]' : Retrieve a specific user by ID.
 
-// GET /api/users/[id] : Retrieve a specific user by ID.
-
-export const GET = async(req, {params})=> {
+export const GET = async (req, { params }) => {
   try {
     const { id } = params;
 
     const user = await db.select().from(users).where(eq(users.id, id));
 
     return user.length > 0
-      ? sendResponse( 200, user)
-      : handleError( 404, 'User not found')
-
+      ? sendResponse(200, user)
+      : handleError(404, "User not found");
   } catch (error) {
-    console.log('Error :', error);
-    return handleError( 500, 'Failed to retrieve user')
+    console.log("Error :", error);
+    return handleError(500, "Failed to retrieve user");
   }
-}
+};
 
 // PUT /api/users/[id] : Update a specific user by ID.
 
-export async function updateUserById(req, res) {
-  if (req.method !== 'PUT') return methodNotAllowed(res, req.method, 'PUT');
-
+export const PUT = async (req, { params }) => {
   try {
-    const { id } = req.params;
-    const updateInfo = req.body;
+    const { id } = params;
 
-    if (Object.keys(updateInfo).length === 0) {
-      return handleError(res, 400, 'No data provided');
+    const updateInfo = await req.json();
+
+    if (!updateInfo || Object.keys(updateInfo).length === 0) {
+      return handleError(400, "No data provided");
     }
 
-    const updateUser = await db.update(users)
+    const updateUser = await db
+      .update(users)
       .set(updateInfo)
       .where(eq(users.id, id))
-      .returning('*');
+      .returning();
 
     return updateUser.length > 0
-      ? sendResponse(res, 200, updateUser[0])
-      : handleError(res, 404, 'User not found');
+      ? sendResponse(200, updateUser[0])
+      : handleError(404, "User not found");
   } catch (error) {
-    return handleError(res, 500, 'Failed to update user');
+    console.log("Error :", error);
+    return handleError(500, "Failed to update user");
   }
-}
+};
 
 // DELETE /api/users/[id] : Delete a specific user by ID.
 
-export async function deleteUserById(req, res) {
-  if (req.method !== 'DELETE') return methodNotAllowed(res, req.method, 'DELETE');
-
+export const DELETE = async (req, { params }) => {
   try {
-    const { id } = req.params;
-    const deleteUser = await db.delete(users)
+    const { id } = params;
+    const deleteUser = await db
+      .delete(users)
       .where(eq(users.id, id))
       .returning({ name: users.name });
 
     return deleteUser.length > 0
-      ? sendResponse(res, 204, 'User deleted')
-      : handleError(res, 404, 'User not found');
+      ? sendResponse(204, "User deleted")
+      : handleError(404, "User not found");
   } catch (error) {
-    return handleError(res, 500, 'Failed to delete user');
+    return handleError(500, "Failed to delete user");
   }
-}
+};
