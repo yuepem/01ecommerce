@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ShoppingCart, User, Heart, Search } from "lucide-react";
 
 const Navigation = ({ setIsCartOpen }) => {
@@ -9,6 +9,21 @@ const Navigation = ({ setIsCartOpen }) => {
   const toggleMobileSearch = () => {
     setIsMobileSearchVisible(!isMobileSearchVisible);
   };
+
+  // Avoiding mobile search bar remaining open when resizing the screen
+  useEffect(() => {
+    const closeMobileSearch = () => {
+      if (window.innerWidth >= 640) {
+        setIsMobileSearchVisible(false);
+      }
+    };
+
+    window.addEventListener("resize", closeMobileSearch);
+    return () => {
+      window.removeEventListener("resize", closeMobileSearch);
+    };
+  }, [])
+
 
   return (
     <header>
@@ -40,7 +55,7 @@ const Navigation = ({ setIsCartOpen }) => {
       </nav>
 
       {/* Mobile Search Bar */}
-      {isMobileSearchVisible && <MobileSearchBar />}
+      {isMobileSearchVisible && window.innerWidth < 640 && <MobileSearchBar />}
     </header>
   );
 };

@@ -46,7 +46,7 @@ export default ProductsList; */
 
 'use client';
 
-import React from 'react';
+// import React from 'react';
 import { Star, ChevronDown } from 'lucide-react';
 
 const ProductsList = ({ setIsQuickViewOpen }) => {
@@ -63,7 +63,7 @@ const ProductsList = ({ setIsQuickViewOpen }) => {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.map((product) => (
-          <div key={product} className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col sm:flex-row">
+          <div key={product} className="bg-white rounded-lg shadow-md overflow-hidden flex flex-row sm:flex-col">
             <img 
               src="/api/placeholder/300/200" 
               alt="Product" 
