@@ -1,9 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ShoppingCart, User, Heart, Search } from "lucide-react";
+import Link from "next/link";
+import { ShoppingCart, User, Heart, Search, Menu } from "lucide-react";
 
-const Navigation = ({ setIsCartOpen }) => {
+
+import CartSide from "@/components/CartSide";
+
+const Navigation = ({ isCartOpen, setIsCartOpen }) => {
   const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
 
   const toggleMobileSearch = () => {
@@ -22,8 +26,7 @@ const Navigation = ({ setIsCartOpen }) => {
     return () => {
       window.removeEventListener("resize", closeMobileSearch);
     };
-  }, [])
-
+  }, []);
 
   return (
     <header>
@@ -31,9 +34,11 @@ const Navigation = ({ setIsCartOpen }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <div className="flex-shrink-0">
-              <span className="font-bold text-xl">Swed-Shark</span>
-            </div>
+            <Link href="/">
+              <div className="flex-shrink-0">
+                <span className="font-bold text-xl">Swed-Shark</span>
+              </div>
+            </Link>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-4">
@@ -48,6 +53,7 @@ const Navigation = ({ setIsCartOpen }) => {
                 className="text-gray-600 cursor-pointer"
                 size={24}
               />
+              {/* <Menu /> */}
               <NavIcons setIsCartOpen={setIsCartOpen} />
             </div>
           </div>
@@ -56,9 +62,15 @@ const Navigation = ({ setIsCartOpen }) => {
 
       {/* Mobile Search Bar */}
       {isMobileSearchVisible && window.innerWidth < 640 && <MobileSearchBar />}
+      {/* Cart Side */}
+      {isCartOpen && (
+        <CartSide isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen} />
+      )}
     </header>
   );
 };
+
+// SearchBar
 
 const SearchBar = () => (
   <div className="relative">
@@ -71,16 +83,27 @@ const SearchBar = () => (
   </div>
 );
 
+
+// NavIcons: Cart, User, Like List
+
 const NavIcons = ({ setIsCartOpen }) => (
   <>
-    <button onClick={() => setIsCartOpen(true)} className="relative">
-      <ShoppingCart className="text-gray-600" size={24} />
+    <button
+      onClick={() => setIsCartOpen(true)}
+      className="relative hover:animate-bounce"
+    >
+      <ShoppingCart className="text-gray-600 " size={24} />
       <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
         3
       </span>
     </button>
-    <User className="text-gray-600" size={24} />
-    <Heart className="text-gray-600" size={24} />
+
+    <Link href="/">
+      <User className="text-gray-600" size={24} />
+    </Link>
+    <Link href="/">
+      <Heart className="text-gray-600" size={24} />
+    </Link>
   </>
 );
 
