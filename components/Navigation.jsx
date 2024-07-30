@@ -98,10 +98,10 @@ const NavIcons = ({ setIsCartOpen }) => (
       </span>
     </button>
 
-    <Link href="/">
+    <Link href="/userProfile">
       <User className="text-gray-600" size={24} />
     </Link>
-    <Link href="/">
+    <Link href="/likeList">
       <Heart className="text-gray-600" size={24} />
     </Link>
   </>
