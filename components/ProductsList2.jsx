@@ -44,7 +44,7 @@ const products = [
   // More products...
 ];
 
-export default function ProductsLiat2() {
+export default function ProductsLit2() {
   return (
     <div className="bg-white">
       <h2 className="text-xl font-semibold pt-4">Products</h2>

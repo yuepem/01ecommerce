@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ShoppingCart, User, Heart, Search, Menu } from "lucide-react";
+import { ShoppingCart, User, Search, Menu } from "lucide-react";
 
 
 import CartSide from "@/components/CartSide";
@@ -34,7 +34,7 @@ const Navigation = ({ isCartOpen, setIsCartOpen }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link href="/">
+            <Link href="/searchResults">
               <div className="flex-shrink-0">
                 <span className="font-bold text-xl">Swed-Shark</span>
               </div>
@@ -47,7 +47,7 @@ const Navigation = ({ isCartOpen, setIsCartOpen }) => {
             </div>
 
             {/* Mobile Navigation */}
-            <div className="flex md:hidden items-center space-x-3">
+            <div className="flex md:hidden items-center space-x-4">
               <Search
                 onClick={toggleMobileSearch}
                 className="text-gray-600 cursor-pointer"
@@ -100,9 +100,6 @@ const NavIcons = ({ setIsCartOpen }) => (
 
     <Link href="/userProfile">
       <User className="text-gray-600" size={24} />
-    </Link>
-    <Link href="/likeList">
-      <Heart className="text-gray-600" size={24} />
     </Link>
   </>
 );

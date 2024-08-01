@@ -1,30 +1,36 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { User, Mail, Phone, MapPin, Package, CreditCard, Heart, LogOut } from 'lucide-react';
+import React, { useState } from "react";
+import { User, Mail, Phone, MapPin, Package, CreditCard, Heart, LogOut, ChevronDown, ChevronUp } from 'lucide-react';
+
 
 const UserAccount = () => {
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab, setActiveTab] = useState("profile");
+  const [expandedOrder, setExpandedOrder] = useState(null);
 
   const user = {
-    name: 'Jane Doe',
-    email: 'jane.doe@example.com',
-    phone: '+1 234 567 8900',
-    address: '123 Main St, Anytown, AN 12345',
-    avatarUrl: 'https://i.pravatar.cc/150?img=47'
+    name: "Jane Doe",
+    email: "jane.doe@example.com",
+    phone: "+1 234 567 8900",
+    address: "123 Main St, Anytown, AN 12345",
+    avatarUrl: "https://i.pravatar.cc/150?img=47",
   };
 
   const orders = [
-    { id: '1234', date: '2023-07-15', total: '$120.00', status: 'Delivered' },
-    { id: '5678', date: '2023-06-30', total: '$85.50', status: 'Shipped' },
-    { id: '9012', date: '2023-06-15', total: '$200.00', status: 'Processing' },
+    { id: "1234", date: "2023-07-15", total: "$120.00", status: "Delivered" },
+    { id: "5678", date: "2023-06-30", total: "$85.50", status: "Shipped" },
+    { id: "9012", date: "2023-06-15", total: "$200.00", status: "Processing" },
   ];
 
   const wishlist = [
-    { id: '1', name: 'Wireless Headphones', price: '$79.99' },
-    { id: '2', name: 'Smart Watch', price: '$199.99' },
-    { id: '3', name: 'Portable Charger', price: '$49.99' },
+    { id: "1", name: "Wireless Headphones", price: "$79.99" },
+    { id: "2", name: "Smart Watch", price: "$199.99" },
+    { id: "3", name: "Portable Charger", price: "$49.99" },
   ];
+
+  const toggleOrderExpansion = (orderId) => {
+    setExpandedOrder(expandedOrder === orderId ? null : orderId);
+  };
 
   const renderProfile = () => (
     <div className="space-y-4">
@@ -47,27 +53,55 @@ const UserAccount = () => {
     </div>
   );
 
-  const renderOrders = () => (
-    <div className="space-y-4">
-      {orders.map(order => (
-        <div key={order.id} className="flex justify-between items-center border-b pb-2">
-          <div>
-            <p className="font-medium">Order #{order.id}</p>
-            <p className="text-sm text-gray-600">{order.date}</p>
+  const renderOrders = () => {
+    if (!orders || orders.length === 0) {
+      return <p>No orders found.</p>;
+    }
+  
+    return (
+      <div className="space-y-4">
+        {orders.map(order => (
+          <div key={order.id} className="border rounded-lg overflow-hidden">
+            <div 
+              className="flex justify-between items-center p-4 cursor-pointer bg-gray-50"
+              onClick={() => toggleOrderExpansion(order.id)}
+            >
+              <div>
+                <p className="font-medium">Order #{order.id}</p>
+                <p className="text-sm text-gray-600">{order.date}</p>
+              </div>
+              <div className="text-right flex items-center">
+                <div className="mr-4">
+                  <p>{order.total}</p>
+                  <p className="text-sm text-gray-600">{order.status}</p>
+                </div>
+                {expandedOrder === order.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+              </div>
+            </div>
+            {expandedOrder === order.id && (
+              <div className="p-4 bg-white">
+                <h4 className="font-medium mb-2">Order Details:</h4>
+                {order.items && order.items.map((item, index) => (
+                  <div key={index} className="flex justify-between items-center mb-2">
+                    <span>{item.name} (x{item.quantity})</span>
+                    <span>{item.price}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="text-right">
-            <p>{order.total}</p>
-            <p className="text-sm text-gray-600">{order.status}</p>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+        ))}
+      </div>
+    );
+  };
 
   const renderWishlist = () => (
     <div className="space-y-4">
-      {wishlist.map(item => (
-        <div key={item.id} className="flex justify-between items-center border-b pb-2">
+      {wishlist.map((item) => (
+        <div
+          key={item.id}
+          className="flex justify-between items-center border-b pb-2"
+        >
           <p>{item.name}</p>
           <p>{item.price}</p>
         </div>
@@ -76,12 +110,12 @@ const UserAccount = () => {
   );
 
   const renderContent = () => {
-    switch(activeTab) {
-      case 'profile':
+    switch (activeTab) {
+      case "profile":
         return renderProfile();
-      case 'orders':
+      case "orders":
         return renderOrders();
-      case 'wishlist':
+      case "wishlist":
         return renderWishlist();
       default:
         return null;
@@ -91,34 +125,42 @@ const UserAccount = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="flex items-center mb-8">
-        <img src={user.avatarUrl} alt={user.name} className="w-20 h-20 rounded-full mr-4" />
+        <img
+          src={user.avatarUrl}
+          alt={user.name}
+          className="w-20 h-20 rounded-full mr-4"
+        />
         <h1 className="text-2xl font-medium">Welcome, {user.name}</h1>
       </div>
 
       <div className="flex mb-6">
-        <button 
-          onClick={() => setActiveTab('profile')} 
-          className={`mr-4 pb-2 ${activeTab === 'profile' ? 'border-b-2 border-gray-800' : ''}`}
+        <button
+          onClick={() => setActiveTab("profile")}
+          className={`mr-4 pb-2 ${
+            activeTab === "profile" ? "border-b-2 border-gray-800" : ""
+          }`}
         >
           Profile
         </button>
-        <button 
-          onClick={() => setActiveTab('orders')} 
-          className={`mr-4 pb-2 ${activeTab === 'orders' ? 'border-b-2 border-gray-800' : ''}`}
+        <button
+          onClick={() => setActiveTab("orders")}
+          className={`mr-4 pb-2 ${
+            activeTab === "orders" ? "border-b-2 border-gray-800" : ""
+          }`}
         >
           Orders
         </button>
-        <button 
-          onClick={() => setActiveTab('wishlist')} 
-          className={`mr-4 pb-2 ${activeTab === 'wishlist' ? 'border-b-2 border-gray-800' : ''}`}
+        <button
+          onClick={() => setActiveTab("wishlist")}
+          className={`mr-4 pb-2 ${
+            activeTab === "wishlist" ? "border-b-2 border-gray-800" : ""
+          }`}
         >
           Wishlist
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        {renderContent()}
-      </div>
+      <div className="bg-white rounded-lg shadow-sm p-6">{renderContent()}</div>
 
       <div className="mt-8 flex justify-between">
         <button className="text-gray-600 hover:text-gray-800 flex items-center">
