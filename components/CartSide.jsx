@@ -132,7 +132,7 @@ export default function CartSide({ isCartOpen, setIsCartOpen }) {
                   <div className="mt-6">
                     <Link
                       href="/checkoutPage"
-                      className="flex items-center justify-center rounded-md border border-transparent bg-gray-500 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-gradient-to-t from-indigo-300 via-indigo-400 to-indigo-500 transition-all duration-300 ease-in-out flex justify-center items-center"
+                      className="flex items-center justify-center rounded-md border border-transparent bg-gray-500 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-gradient-to-t from-indigo-300 via-indigo-400 to-indigo-500 transition-all duration-300 ease-in-out"
                     >
                       <button type="button" onClick={() => setIsCartOpen(false)}>Checkout</button>
                       

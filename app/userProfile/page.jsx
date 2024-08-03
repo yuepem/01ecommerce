@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { User, Mail, Phone, MapPin, Package, CreditCard, Heart, LogOut, ChevronDown, ChevronUp } from 'lucide-react';
+import avatar from '@/public/avatar.png';
 
 
 const UserAccount = () => {
@@ -9,11 +11,11 @@ const UserAccount = () => {
   const [expandedOrder, setExpandedOrder] = useState(null);
 
   const user = {
-    name: "Jane Doe",
-    email: "jane.doe@example.com",
+    name: "Xiao Yue",
+    email: "xiao.yue@example.com",
     phone: "+1 234 567 8900",
     address: "123 Main St, Anytown, AN 12345",
-    avatarUrl: "https://i.pravatar.cc/150?img=47",
+    avatar: { avatar },
   };
 
   const orders = [
@@ -125,8 +127,8 @@ const UserAccount = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="flex items-center mb-8">
-        <img
-          src={user.avatarUrl}
+        <Image
+          src={user.avatar.avatar}
           alt={user.name}
           className="w-20 h-20 rounded-full mr-4"
         />
