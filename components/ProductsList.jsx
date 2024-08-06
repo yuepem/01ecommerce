@@ -5,6 +5,16 @@ import Link from "next/link";
 import { Heart, ShoppingCart, Minus, Plus } from "lucide-react";
 import useCartStore from "@/store/cartStore";
 import useProductStore from "@/store/productStore";
+import { v4 as uuidv4 } from 'uuid';
+
+const getOrCreateCartId = () => {
+  let cartId = localStorage.getItem('temporaryCartId');
+  if (!cartId) {
+    cartId = uuidv4();
+    localStorage.setItem('temporaryCartId', cartId);
+  }
+  return cartId;
+};
 
 const ProductsList = ({ products }) => {
   const [likedProducts, setLikedProducts] = useState({});
@@ -19,6 +29,7 @@ const ProductsList = ({ products }) => {
   };
 
   const addToCart = async (productId) => {
+    const cartId = getOrCreateCartId();
     try {
       const response = await fetch(`/api/carts/${cartId}/items`, {
         method: 'POST',
@@ -39,6 +50,7 @@ const ProductsList = ({ products }) => {
   };
 
   const updateCartQuantity = async (productId, delta) => {
+    const cartId = getOrCreateCartId();
     const existingItem = cartItems.find(item => item.productId === productId);
     const newQuantity = existingItem ? Math.max(0, existingItem.quantity + delta) : (delta > 0 ? 1 : 0);
 

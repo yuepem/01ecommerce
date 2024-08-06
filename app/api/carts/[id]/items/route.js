@@ -1,8 +1,82 @@
 import { db } from "@/server/index";
-import { cartItems } from "@/server/schema"
+import { cartItems, carts } from "@/server/schema"
 import { handleError, sendResponse } from '@/utils/apiHelpers';
-import { eq, desc } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
+// Helper function to get or create a cart
+const getOrCreateCart = async (cartId) => {
+  try {
+    const existingCarts = await db.select().from(carts).where(eq(carts.id, cartId));
+    let cart = existingCarts[0];
+    if (!cart) {
+      const newCarts = await db.insert(carts).values({ id: cartId }).returning();
+      cart = newCarts[0];
+    }
+    return cart;
+  } catch (error) {
+    console.error('Error in getOrCreateCart:', error);
+    throw error;
+  }
+};
+
+// POST ./api/carts/:id/items : Add item to cart by cart id
+export const POST = async (req, { params }) => {
+  try {
+    const cartId = params?.id;
+
+    if (!cartId) {
+      return handleError(400, 'No cart id provided');
+    }
+
+    console.log('Received cartId:', cartId);
+
+    // Ensure the cart exists
+    await getOrCreateCart(cartId);
+
+    // Parse the request body
+    const body = await req.json();
+    console.log('Received body:', body);
+
+    const { productId, quantity } = body;
+
+    if (!productId || typeof quantity !== 'number' || quantity < 1) {
+      return handleError(400, 'Invalid input. ProductId and a positive quantity are required.');
+    }
+
+    // Check if the item already exists in the cart
+    const existingItems = await db
+      .select()
+      .from(cartItems)
+      .where(eq(cartItems.cartId, cartId))
+      .where(eq(cartItems.productId, productId));
+    const existingItem = existingItems[0];
+
+    let result;
+    if (existingItem) {
+      // Update the quantity if the item already exists
+      result = await db
+        .update(cartItems)
+        .set({ quantity: existingItem.quantity + quantity })
+        .where(eq(cartItems.id, existingItem.id))
+        .returning();
+    } else {
+      // Insert a new item if it doesn't exist
+      result = await db
+        .insert(cartItems)
+        .values({ cartId, productId, quantity })
+        .returning();
+    }
+
+    console.log('Operation result:', result);
+
+    return result.length > 0
+      ? sendResponse(200, { 'Item added to cart successfully': result[0] })
+      : handleError(500, 'Failed to add item to cart');
+  } catch (error) {
+    console.error('Error in POST /api/carts/[id]/items:', error);
+    return handleError(500, `Server error: ${error.message}`);
+  }
+};
 
 // GET ./api/carts/:id/items : Retrieve cart items by cart id 
 
@@ -20,55 +94,6 @@ export const GET = async (req, { params }) => {
         return handleError(500, 'server error')
     }
 }
-
-// POST ./api/carts/:id/items : Add item to cart by cart id
-export const POST = async (req, { params }) => {
-
-    try {
-        // Extract cartId from both params and query to ensure we get it
-        const cartId = params?.id || req.nextUrl?.searchParams?.get('id');
-
-        if (!cartId) {
-            return handleError(400, 'No cart id provided');
-        }
-
-        // Parse the request body
-        const body = await req.json();
-
-        const productId = body.productId;
-        const quantity = body.quantity;
-
-        if (!productId || typeof quantity !== 'number' || quantity < 1) {
-            return handleError(400, 'Invalid input. ProductId and a positive quantity are required.');
-        }
-
-        // Find the current highest ID
-        const [lastItem] = await db
-            .select({ id: cartItems.id })
-            .from(cartItems)
-            .orderBy(desc(cartItems.id))
-            .limit(1);
-
-        const lastId = lastItem?.id || 0;
-        const newId = lastId + 1;
-
-        const newCartItem = {
-            id: newId,
-            cartId,
-            productId,
-            quantity,
-        };
-
-        const results = await db.insert(cartItems).values(newCartItem).returning();
-
-        return results.length > 0
-            ? sendResponse(200, { 'Item added to cart successfully': results[0] })
-            : handleError(500, 'Failed to add item to cart');
-    } catch (error) {
-        return handleError(500, `Server error: ${error.message}`);
-    }
-};
-
 
 // DELETE ./api/carts/:id/items : empty cart items by cart id
 

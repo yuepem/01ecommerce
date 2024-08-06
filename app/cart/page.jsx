@@ -29,14 +29,9 @@ export default function CartSide({ isCartOpen, setIsCartOpen }) {
     if (isCartOpen) {
       setIsLoading(true);
       const cartId = getOrCreateCartId();
-      console.log('CartSide opened, fetching items for cartId:', cartId);
       fetchCartItems(cartId).finally(() => setIsLoading(false));
     }
   }, [isCartOpen, fetchCartItems]);
-
-  useEffect(() => {
-    console.log('CartSide items updated:', items);
-  }, [items]);
 
   const handleUpdateQuantity = async (productId, delta) => {
     const cartId = getOrCreateCartId();

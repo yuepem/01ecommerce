@@ -3,12 +3,21 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ShoppingCart, User, Search, Menu } from "lucide-react";
-
+import useCartStore from "@/store/cartStore";
+import { getOrCreateCartId } from "@/utils/cartUtils";
 
 import CartSide from "@/components/CartSide";
 
-const Navigation = ({ isCartOpen, setIsCartOpen }) => {
+const Navigation = () => {
   const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const { items, fetchCartItems, getCartItemsCount } = useCartStore();
+
+  useEffect(() => {
+    const cartId = getOrCreateCartId();
+    console.log('Fetching cart items in Navigation. CartId:', cartId);
+    fetchCartItems(cartId);
+  }, [fetchCartItems]);
 
   const toggleMobileSearch = () => {
     setIsMobileSearchVisible(!isMobileSearchVisible);
@@ -34,7 +43,7 @@ const Navigation = ({ isCartOpen, setIsCartOpen }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link href="/searchResults">
+            <Link href="/">
               <div className="flex-shrink-0">
                 <span className="font-bold text-xl">Swed-Shark</span>
               </div>
@@ -43,7 +52,7 @@ const Navigation = ({ isCartOpen, setIsCartOpen }) => {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-4">
               <SearchBar />
-              <NavIcons setIsCartOpen={setIsCartOpen} />
+              <NavIcons setIsCartOpen={setIsCartOpen} itemCount={getCartItemsCount()} />
             </div>
 
             {/* Mobile Navigation */}
@@ -54,7 +63,7 @@ const Navigation = ({ isCartOpen, setIsCartOpen }) => {
                 size={24}
               />
               {/* <Menu /> */}
-              <NavIcons setIsCartOpen={setIsCartOpen} />
+              <NavIcons setIsCartOpen={setIsCartOpen} itemCount={getCartItemsCount()} />
             </div>
           </div>
         </div>
@@ -71,7 +80,6 @@ const Navigation = ({ isCartOpen, setIsCartOpen }) => {
 };
 
 // SearchBar
-
 const SearchBar = () => (
   <div className="relative">
     <input
@@ -83,19 +91,19 @@ const SearchBar = () => (
   </div>
 );
 
-
 // NavIcons: Cart, User, Like List
-
-const NavIcons = ({ setIsCartOpen }) => (
+const NavIcons = ({ setIsCartOpen, itemCount }) => (
   <>
     <button
       onClick={() => setIsCartOpen(true)}
       className="relative hover:animate-bounce"
     >
-      <ShoppingCart className="text-gray-600 " size={24} />
-      <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-        3
-      </span>
+      <ShoppingCart className="text-gray-600" size={24} />
+      {itemCount > 0 && (
+        <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+          {itemCount}
+        </span>
+      )}
     </button>
 
     <Link href="/userProfile">
