@@ -7,7 +7,7 @@ const ProductsGroup = () => {
         <div className="md:flex">
           <div className="md:flex-shrink-0">
             <img
-              src="/api/placeholder/300/200"
+              src=""
               alt="Special Products"
               className="h-48 w-full object-cover md:w-48"
             />
