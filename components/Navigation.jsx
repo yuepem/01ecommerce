@@ -1,18 +1,26 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; 
 import Link from "next/link";
 import { ShoppingCart, User, Search, Menu } from "lucide-react";
-
+import SearchBar from "@/components/Search";
+import  useProductStore  from "@/store/useProductStore";
 
 import CartSide from "@/components/CartSide";
 
 const Navigation = ({ isCartOpen, setIsCartOpen }) => {
   const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
-
+  const router = useRouter();
+  const resetState = useProductStore((state) => state.resetState);
   const toggleMobileSearch = () => {
     setIsMobileSearchVisible(!isMobileSearchVisible);
   };
+
+  const handleLogoClick = () => {
+    resetState();
+    router.push('/');
+};
 
   // Avoiding mobile search bar remaining open when resizing the screen
   useEffect(() => {
@@ -34,11 +42,11 @@ const Navigation = ({ isCartOpen, setIsCartOpen }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link href="/searchResults">
-              <div className="flex-shrink-0">
-                <span className="font-bold text-xl">Swed-Shark</span>
-              </div>
-            </Link>
+            {/* <Link href="/"> */}
+            <div className="flex-shrink-0" onClick={handleLogoClick}>
+              <span className="font-bold text-xl">Swed-Shark</span>
+            </div>
+            {/* </Link> */}
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-4">
@@ -72,16 +80,17 @@ const Navigation = ({ isCartOpen, setIsCartOpen }) => {
 
 // SearchBar
 
-const SearchBar = () => (
+/* const SearchBar = () => (
   <div className="relative">
     <input
       type="text"
       placeholder="Search..."
+      onChange={(e) => setSearch(e.target.value)}
       className="pl-8 pr-4 py-2 border rounded-md"
     />
     <Search className="absolute left-2 top-2.5 text-gray-400" size={20} />
   </div>
-);
+); */
 
 
 // NavIcons: Cart, User, Like List
