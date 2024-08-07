@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
@@ -55,7 +55,7 @@ const useProductStore = create(
         }),
         {
             name: 'product-store',
-            getStorage: () => localStorage,
+            storage: createJSONStorage(() => localStorage),
         }
     )
 );

@@ -3,10 +3,16 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Heart, ShoppingCart, Minus, Plus } from "lucide-react";
+import useCartStore from "@/store/useCartStore";
+import useProductStore from "@/store/useProductStore";
 
-const ProductsList = ({ products }) => {
+const ProductsList = () => {
   const [likedProducts, setLikedProducts] = useState({});
-  const [cartItems, setCartItems] = useState({});
+  // const [cartItems, setCartItems] = useState({});
+  const {cartItems, addToCart, updateCartQuantity } = useCartStore();
+
+  const { filteredProducts } = useProductStore();
+  const products = filteredProducts; // Provide a default empty array if filteredProducts is undefined
 
   const toggleLike = (productId) => {
     setLikedProducts((prev) => ({
@@ -15,46 +21,25 @@ const ProductsList = ({ products }) => {
     }));
   };
 
-  const addToCart = (productId) => {
-    setCartItems((prev) => ({
-      ...prev,
-      [productId]: (prev[productId] || 0) + 1,
-    }));
-  };
-
-  const updateCartQuantity = (productId, delta) => {
-    setCartItems((prev) => {
-      const newQuantity = (prev[productId] || 0) + delta;
-      if (newQuantity <= 0) {
-        const { [productId]: _, ...rest } = prev;
-        return rest;
-      }
-      return { ...prev, [productId]: newQuantity };
-    });
-  };
-
   return (
     <div className="my-5">
-        <div className="mt-5">
-          <p className="text-gray-600">Showing {products.length} products</p>
-        </div>
-      <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
-        
+      <div className="mt-5">
+        <p className="text-gray-600">
+          Showing {products.length} product{products.length !== 1 ? 's' : ''}
+        </p>
+      </div>
+      <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
         {products.map((product) => (
-          <div key={product.id} className="group relative">
-            <Link href="/productDetails" className="block">
-              <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
-                <img
-                  alt={product.imageAlt}
-                  src={product.imageSrc}
-                  className="h-full w-full object-cover object-center group-hover:opacity-75"
-                />
-              </div>
-              <h3 className="mt-4 text-sm text-gray-700">{product.name}</h3>
-              <p className="mt-1 text-sm font-medium text-gray-900">
-                {product.price}
-              </p>
-            </Link>
+          <div key={product.id} className="group">
+            <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
+              <img
+                src={product.imageSrc}
+                alt={product.imageAlt}
+                className="h-full w-full object-cover object-center group-hover:opacity-75"
+              />
+            </div>
+            <h3 className="mt-4 text-sm text-gray-700">{product.name}</h3>
+            <p className="mt-1 text-lg font-medium text-gray-900">${product.price}</p>
             <div className="mt-2 flex justify-between items-center">
               <button onClick={() => toggleLike(product.id)} className="p-2">
                 <Heart
